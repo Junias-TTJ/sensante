@@ -139,3 +139,33 @@ print(f"\nProbabilites par classe :")
 for classe, proba in zip(model_loaded.classes_, probas):
     bar = '#' * int(proba * 30)
 print(f" {classe:8s} : {proba:.1%} {bar}")
+
+#Exercice1
+
+importances = model.feature_importances_
+for name, imp in sorted(zip(feature_cols, importances),
+                        key=lambda x: x[1], reverse=True):
+    print(f"{name:20s} : {imp:.3f}")
+
+#Exercice2
+
+# 3 patients fictifs
+patients = [
+    {'age': 19, 'sexe': 'M', 'temperature': 37.0, 'tension_sys': 120,
+     'toux': False, 'fatigue': False, 'maux_tete': False, 'region': 'Dakar'},
+    
+    {'age': 35, 'sexe': 'F', 'temperature': 40.5, 'tension_sys': 95,
+     'toux': True, 'fatigue': True, 'maux_tete': True, 'region': 'Thiès'},
+    
+    {'age': 67, 'sexe': 'M', 'temperature': 38.5, 'tension_sys': 150,
+     'toux': True, 'fatigue': True, 'maux_tete': False, 'region': 'Ziguinchor'}
+]
+
+for p in patients:
+    sexe_enc = le_sexe_loaded.transform([p['sexe']])[0]
+    region_enc = le_region_loaded.transform([p['region']])[0]
+    features = [p['age'], sexe_enc, p['temperature'], p['tension_sys'],
+                int(p['toux']), int(p['fatigue']), int(p['maux_tete']), region_enc]
+    diagnostic = model_loaded.predict([features])[0]
+    proba = model_loaded.predict_proba([features])[0].max()
+    print(f"Patient {p['sexe']} {p['age']} ans | Diagnostic : {diagnostic} | Probabilité : {proba:.1%}")
